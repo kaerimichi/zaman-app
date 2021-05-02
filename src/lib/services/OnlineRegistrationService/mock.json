@@ -1,0 +1,75 @@
+{
+  "objectId": "KDN6itBRhR",
+  "alias": "ahgora_dot_iea",
+  "displayName": "Ahgora IEA",
+  "actions": [
+    {
+      "alias": "registration",
+      "type": "POST",
+      "endpoint": "registration/registerdirect/:companyAltId",
+      "queryParams": {},
+      "data": {
+        "account": ":registry",
+        "password": ":password",
+        "identity": ":companyId",
+        "origin": "pw2",
+        "key": ""
+      },
+      "headers": {
+        "X-Requested-With": "XMLHttpRequest"
+      }
+    },
+    {
+      "alias": "history",
+      "type": "GET",
+      "endpoint": "history/summary/:companyAltId/[currentDate]",
+      "queryParams": {},
+      "data": {},
+      "headers": {
+        "Authorization": "Basic [basicAuthHash]"
+      }
+    }
+  ],
+  "fields": [
+    {
+      "type": "text",
+      "secure": false,
+      "alias": "registry",
+      "displayName": "Matrícula",
+      "keyboardType": "numeric",
+      "defaultValue": ""
+    },
+    {
+      "type": "text",
+      "secure": true,
+      "alias": "password",
+      "displayName": "Senha",
+      "keyboardType": "default",
+      "defaultValue": ""
+    }
+  ],
+  "apiBaseUrl": "https://ahgora-unofficial-api.gabrielrimes.net",
+  "data": {
+    "companyName": "Ahgora - IEA",
+    "companyId": "a9b0832cc1c3d897b1081f16237ede9a",
+    "companyAltId": "a118989",
+    "verifiedPunches": false,
+    "workShift": 8
+  },
+  "computedProperties": {
+    "currentDate": [
+      "MM-YYYY"
+    ],
+    "basicAuthHash": [
+      ":registry",
+      ":password"
+    ]
+  },
+  "createdAt": "2018-11-02T00:18:07.777Z",
+  "updatedAt": "2018-11-02T00:18:07.777Z",
+  "ACL": {
+    "*": {
+      "read": true
+    }
+  }
+}
