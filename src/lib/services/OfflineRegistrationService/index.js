@@ -46,6 +46,9 @@ export default class OfflineRegistrationService {
 
       if (!monthEntries) monthEntries = []
 
+      monthEntries = monthEntries
+        .filter(e => moment(e.date, 'YYYY-MM-DD').format('M') === moment().format('M'))
+
       currentDayEntry = monthEntries.find(e => e.date === moment().format('YYYY-MM-DD'))
 
       if (!currentDayEntry) {
@@ -88,6 +91,8 @@ export default class OfflineRegistrationService {
       await this.sleep()
 
       if (monthEntries) {
+        monthEntries = monthEntries
+          .filter(e => moment(e.date, 'YYYY-MM-DD').format('M') === moment().format('M'))
         monthEntries.forEach(monthEntry => {
           monthEntry.timeWorked = getStringTime(
             getTimeWorked(monthEntry.punches, this.config.data.workShift)
