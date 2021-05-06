@@ -23,7 +23,6 @@ export default class NotificationsService {
     this.cancelAll()
     this.rules.forEach(notification => {
       if (notification.shouldSchedule()) {
-        console.log(`scheduling ${notification.getConfig().title}`)
         PushNotification.localNotificationSchedule(
           notification.getConfig()
         )

@@ -1,9 +1,5 @@
 import React, { Component } from 'react'
-import {
-  TextInput,
-  Text,
-  View
-} from 'react-native'
+import { TextInput, Text, View } from 'react-native'
 import ButtonComponent from 'Zaman/src/components/ButtonComponent'
 import StorageService from 'Zaman/src/lib/services/StorageService'
 import ShareConfigModal from './components/ShareConfigModal'
@@ -88,7 +84,11 @@ export default class ConfigurationScreen extends Component {
         <View style={styles.inputsSection}>
           {
             !this.state.fields
-              ? <Text style={styles.noFieldsText}>Não há configurações adicionais.</Text>
+              ? (
+                <View style={styles.noAdditionalConfigContainer}>
+                  <Text style={styles.noFieldsText}>Não há configurações adicionais.</Text>
+                </View>
+              )
               : this.renderInputs()
           }
         </View>

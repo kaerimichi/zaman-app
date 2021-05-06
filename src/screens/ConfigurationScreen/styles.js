@@ -54,5 +54,11 @@ export default StyleSheet.create({
     color: pallete.discrete,
     paddingBottom: 8,
     fontSize: 14
+  },
+  noAdditionalConfigContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40
   }
 })
