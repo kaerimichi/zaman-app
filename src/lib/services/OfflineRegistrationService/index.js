@@ -2,6 +2,7 @@ import moment from 'moment'
 import 'moment-duration-format'
 import localization from 'moment/locale/pt-br'
 import StorageService from '../StorageService'
+import { sortBy } from 'lodash'
 import {
   compute,
   getStringTime,
@@ -22,21 +23,41 @@ export default class OfflineRegistrationService {
     })
   }
 
-  getTemplate () {
-    const weekDayAsText = moment()
+  getTemplate (date = null) {
+    const dateFormat = 'YYYY-MM-DD'
+    const momentDate = date ? moment(date) : moment()
+    const weekDayAsText = momentDate
       .locale('pt-br', localization)
       .format('dddd')
       .toLowerCase()
 
     return {
-      date: moment().format('YYYY-MM-DD'),
-      weekDay: moment().format('d'),
+      date: momentDate.format(dateFormat),
+      weekDay: momentDate.format('d'),
       weekDayAsText,
       punches: [],
       timeWorked: null,
       holiday: false,
       obs: false
     }
+  }
+
+  fillEmptyDays (monthPunches) {
+    const dates = monthPunches.map(e => e.date)
+
+    for (let day = 1; day <= moment().daysInMonth(); day++) {
+      const dateToCheck = moment(day, 'DD').format('YYYY-MM-DD')
+
+      if (dates.indexOf(dateToCheck) === -1) {
+        monthPunches.push(this.getTemplate(dateToCheck))
+      }
+    }
+
+    return sortBy(
+      monthPunches, entry => {
+        return moment(entry.date, 'YYYY-MM-DD').format('DD')
+      }
+    )
   }
 
   async register () {
@@ -87,9 +108,12 @@ export default class OfflineRegistrationService {
   async retrieveHistory () {
     try {
       let monthEntries = await this.storage.getItem('monthEntries')
+      let monthEntriesToCompute = JSON.parse(JSON.stringify(monthEntries))
 
+      monthEntries = this.fillEmptyDays(monthEntries || [])
+      
       await this.sleep()
-
+      
       if (monthEntries) {
         monthEntries = monthEntries
           .filter(e => moment(e.date, 'YYYY-MM-DD').format('M') === moment().format('M'))
@@ -102,8 +126,8 @@ export default class OfflineRegistrationService {
 
       return Promise.resolve({
         punches: monthEntries,
-        statistics: monthEntries
-          ? compute(monthEntries)
+        statistics: monthEntriesToCompute
+          ? compute(monthEntriesToCompute)
           : null
       })
     } catch (e) {
