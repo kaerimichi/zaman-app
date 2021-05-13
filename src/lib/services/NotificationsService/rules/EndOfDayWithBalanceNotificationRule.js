@@ -5,9 +5,9 @@ export default class EndOfDayWithBalanceNotificationRule extends BaseNotificatio
   shouldSchedule () {
     const { asMinutes: remAsMinutes } = this.statistics.dayBalance.remaining
     const { asMinutes: extraAsMinutes } = this.statistics.monthBalance.extra
-    const balanceIsNotNeutral = (remAsMinutes - extraAsMinutes) !== 0
+    const balanceIsNeutral = (remAsMinutes - extraAsMinutes) === 0
 
-    return this.punches.length % 2 !== 0 && !balanceIsNotNeutral && this.isWeekDay()
+    return this.punches.length % 2 !== 0 && !balanceIsNeutral && this.isWeekDay()
   }
 
   shouldCancel () {
