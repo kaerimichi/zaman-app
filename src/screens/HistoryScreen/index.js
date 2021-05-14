@@ -8,7 +8,7 @@ import HistorySummary from './components/HistorySummary'
 import pallete from 'Zaman/src/misc/pallete'
 import moment from 'moment'
 import styles from './styles'
-import { isEqual } from 'lodash'
+import { isEqual, sortBy } from 'lodash'
 import RecalculateModal from './components/RecalculateModal'
 
 export default class HistoryScreen extends Component {
@@ -29,6 +29,36 @@ export default class HistoryScreen extends Component {
   storage = new StorageService()
   analytics = new AnalyticsService()
 
+  sleep (ms = 750) {
+    return new Promise(resolve => {
+      setTimeout(resolve, ms)
+    })
+  }
+
+  updateWithNewContent = async ({ date, punches }) => {
+    const monthPunches = this.state.monthPunches
+    let updatedMonthPunches = monthPunches.map(entry => {
+      if (entry.date === date) {
+        entry.punches = punches
+      }
+
+      return entry
+    })
+
+    updatedMonthPunches = sortBy(
+      updatedMonthPunches,
+      entry => moment(entry.date, 'YYYY-MM-DD').format('DD')
+    )
+
+    await this.storage.setItem(
+      'monthEntries',
+      updatedMonthPunches
+    )
+
+    await this.sleep()
+    await this.prepareComponents()
+  }
+
   renderList = items => {
     const onlyFromToday = ({ date }) => {
       return moment(date, 'YYYY-MM-DD').isBefore(moment())
@@ -42,6 +72,7 @@ export default class HistoryScreen extends Component {
             punches={punches || []}
             weekDay={weekDayAsText}
             timeWorked={timeWorked}
+            onNewEntryAdded={this.updateWithNewContent}
             obs={obs}
           />
         )
@@ -65,7 +96,7 @@ export default class HistoryScreen extends Component {
       )
   }
 
-  async UNSAFE_componentWillMount () {
+  async prepareComponents () {
     try {
       this.setState({ fetching: true, info: 'Sem informações ainda.' })
 
@@ -99,6 +130,10 @@ export default class HistoryScreen extends Component {
     } finally {
       this.setState({ fetching: false })
     }
+  }
+
+  async UNSAFE_componentWillMount () {
+    await this.prepareComponents()
   }
 
   render () {

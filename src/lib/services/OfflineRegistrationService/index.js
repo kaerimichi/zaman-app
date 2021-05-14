@@ -14,7 +14,7 @@ const STORED_PUNCHES_OFFSET = 45
 export default class OfflineRegistrationService {
   constructor (config) {
     this.config = config
-    this.storage = new StorageService('@ZamanOfflineStorage')
+    this.storage = new StorageService()
   }
 
   sleep (ms = 1000) {
