@@ -1,9 +1,4 @@
 import moment from 'moment'
-import {
-  getDayClosureEstimate,
-  getTotals,
-  getRemainingEstimate
-} from '../TimeComputationHelper'
 
 function gatherPunches (punches) {
   const normalizeTime = time => time.replace(':', 'h')
@@ -33,34 +28,21 @@ function gatherPunches (punches) {
   }, []).reverse()
 }
 
-function gatherEstimates ({ dayBalance, weekBalance, monthBalance }, dayPunches) {
-  const { remainingOfToday } = getRemainingEstimate(
-    { dayBalance, weekBalance, monthBalance },
-    dayPunches
-  )
-  const dayClosureEstimate = getDayClosureEstimate(
-    { dayBalance, monthBalance },
-    dayPunches
-  )
-  const dayClosureEstimateWithHourBank = getDayClosureEstimate(
-    { dayBalance, monthBalance },
-    dayPunches,
-    true
-  )
+function gatherEstimates ({ dayBalance, dayClosureEstimate }) {
   const items = [
     {
       title: `Hoje, ${moment().format('DD/MM')}`,
-      text: `${remainingOfToday.asShortTime}`
+      text: dayBalance.remaining.asShortTime
     }
   ]
   const hourBankEstimateIsPast = moment()
-    .isSameOrAfter(moment(dayClosureEstimateWithHourBank.asShortTime, 'HH:mm'))
+    .isSameOrAfter(moment(dayClosureEstimate.hourBankBased, 'HH:mm'))
 
-  if (remainingOfToday.asMinutes > 0) {
+  if (dayBalance.remaining.asMinutes > 0) {
     items.push(
       {
         title: 'Encerramento normal',
-        text: `${dayClosureEstimate.asShortTime}`
+        text: dayClosureEstimate.workShiftBased
       }
     )
 
@@ -68,7 +50,7 @@ function gatherEstimates ({ dayBalance, weekBalance, monthBalance }, dayPunches)
       items.push(
         {
           title: 'Encerramento com saldo de horas',
-          text: `${dayClosureEstimateWithHourBank.asShortTime}`
+          text: dayClosureEstimate.hourBankBased
         }
       )
     }
@@ -77,19 +59,15 @@ function gatherEstimates ({ dayBalance, weekBalance, monthBalance }, dayPunches)
   return items
 }
 
-function gatherStatistics ({ dayBalance, weekBalance, monthBalance }, dayPunches) {
-  const { totalOfToday, totalOfThisMonth } = getTotals(
-    { dayBalance, weekBalance, monthBalance },
-    dayPunches
-  )
-  const items = [
+function gatherStatistics ({ dayBalance, monthBalance }, dayPunches) {
+  return [
     {
       title: `Hoje, ${moment().format('DD/MM')}`,
-      text: `${totalOfToday.asShortTime}`
+      text: dayBalance.completed.asShortTime
     },
     {
       title: 'Este mês',
-      text: `${totalOfThisMonth.asShortTime}`
+      text: monthBalance.completed.asShortTime
     }
   ]
 
@@ -105,11 +83,11 @@ module.exports = {
       },
       {
         listTitle: 'HORAS RESTANTES',
-        items: statistics ? gatherEstimates(statistics, dayPunches) : []
+        items: statistics ? gatherEstimates(statistics) : []
       },
       {
         listTitle: 'HORAS TRABALHADAS',
-        items: statistics ? gatherStatistics(statistics, dayPunches) : []
+        items: statistics ? gatherStatistics(statistics) : []
       }
     ]
 

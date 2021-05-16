@@ -10,10 +10,10 @@ import StorageService from 'Zaman/src/lib/services/StorageService'
 import NotificationsService from 'Zaman/src/lib/services/NotificationsService'
 import ButtonComponent from 'Zaman/src/components/ButtonComponent'
 import { getFormattedPanelContents } from './lib/helpers/DataStructureHelper'
-import { getDayPercentage } from './lib/helpers/TimeComputationHelper'
 import pallete from 'Zaman/src/misc/pallete'
 import InstructionsModal from './components/InstructionsModal'
 import Toast from 'react-native-easy-toast'
+import { compute } from 'zaman-statistics-generator'
 
 const TOAST_DURATION = 2500
 
@@ -90,22 +90,29 @@ export default class MainScreen extends Component {
     }
   }
 
-  updatePanelContents = () => {
+  updatePanelContents = async () => {
+    const monthEntries = await this.storage.getItem('monthEntries')
     const panelContents = getFormattedPanelContents(
-      this.state.statistics,
+      compute(monthEntries),
       this.state.dayPunches
     )
 
     this.setState({ panelContents })
   }
 
-  updatePercentage = () => {
-    const dayProgress = getDayPercentage(
-      this.state.statistics,
-      this.state.dayPunches
+  updatePercentage = async () => {
+    const monthEntries = await this.storage.getItem('monthEntries')
+    const { dayBalance } = compute(monthEntries)
+    const dayTotalMinutes = dayBalance.remaining.asMinutes + dayBalance.completed.asMinutes
+    const dayRemainingMinutes = dayBalance.remaining.asMinutes
+    const percentage = Math.round(
+      ((dayRemainingMinutes / dayTotalMinutes * 100) - 100) * -1
     )
 
-    this.setState({ dayProgress })
+    if (percentage > 100) return 100
+    if (percentage < 0) return 0
+
+    this.setState({ dayProgress: percentage })
   }
 
   resetData = async (punches, statistics) => {
