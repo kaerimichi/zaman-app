@@ -26,10 +26,12 @@ export default class HistoryItem extends Component {
   }
 
   processInputContent = () => {
-    this.props.onNewEntryAdded({
-      date: this.props.date,
-      punches: this.state.punches.split(',')
-    })
+    if (this.state.punches.length > 0){
+      this.props.onNewEntryAdded({
+        date: this.props.date,
+        punches: this.state.punches.split(',')
+      })
+    }
 
     this.setState({ editingIsHidden: true })
   }

@@ -21,7 +21,6 @@
     "react": "16.9.0",
     "react-native": "0.61.2",
     "react-native-camera": "^3.8.0",
-    "react-native-easy-toast": "^1.2.0",
     "react-native-gesture-handler": "^1.4.1",
     "react-native-push-notification": "^3.1.9",
     "react-native-qrcode-svg": "^5.2.0",

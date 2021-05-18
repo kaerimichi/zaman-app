@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { StatusBar, Vibration, Dimensions, View } from 'react-native'
+import { StatusBar, Vibration, Dimensions, View, Text } from 'react-native'
 import PunchButton from './components/PunchButton'
 import InformationPanel from './components/InformationPanel'
 import styles from './styles'
@@ -12,8 +12,8 @@ import ButtonComponent from 'Zaman/src/components/ButtonComponent'
 import { getFormattedPanelContents } from './lib/helpers/DataStructureHelper'
 import pallete from 'Zaman/src/misc/pallete'
 import InstructionsModal from './components/InstructionsModal'
-import Toast from 'react-native-easy-toast'
 import { compute } from 'zaman-statistics-generator'
+import DefaultModal from '../../components/ModalComponent'
 
 const TOAST_DURATION = 2500
 
@@ -38,7 +38,9 @@ export default class MainScreen extends Component {
     serviceConfiguration: null,
     instructionsVisible: false,
     fpColor: pallete.accent,
-    timeInfo: null
+    timeInfo: null,
+    modalVisible: false,
+    modalContent: null
   }
 
   attemptRegistration = async () => {
@@ -65,13 +67,31 @@ export default class MainScreen extends Component {
         notifications.process()
       }
 
-      this.setState({ dayPunches: punches, statistics })
+      this.setState({
+        dayPunches: punches,
+        statistics,
+        modalVisible: true,
+        modalContent: (
+          <Text>{ messages.punchSuccess }</Text>
+        )
+      })
       this.updatePanelContents()
       
-      this.refs.toast.show(messages.punchSuccess, TOAST_DURATION)
+      setTimeout(() => {
+        this.setState({ modalVisible: false })
+      }, TOAST_DURATION)
       this.showFpFeedback(true)
     } catch (e) {
-      this.refs.toast.show(e.message, TOAST_DURATION)
+      this.setState({
+        modalVisible: true,
+        modalContent: (
+          <Text>{ e.message }</Text>
+        )
+      })
+      setTimeout(() => {
+        this.setState({ modalVisible: false })
+      }, TOAST_DURATION)
+
       this.showFpFeedback(false)
     } finally {
       this.setState({ fetching: false })
@@ -171,7 +191,16 @@ export default class MainScreen extends Component {
       this.updateGenericInformation()
       intervalId = setInterval(this.updateGenericInformation, 1000)
     } catch (e) {
-      this.refs.toast.show(e.message, TOAST_DURATION)
+      this.setState({
+        modalVisible: true,
+        modalContent: (
+          <Text>{ e.message }</Text>
+        )
+      })
+
+      setTimeout(() => {
+        this.setState({ modalVisible: false })
+      }, TOAST_DURATION)
     }
   }
 
@@ -217,6 +246,11 @@ export default class MainScreen extends Component {
     return (
       <View style={styles.container}>
         <StatusBar backgroundColor={pallete.primary} barStyle='light-content' />
+        <DefaultModal
+          visible={this.state.modalVisible}
+          content={this.state.modalContent}
+          position='top'
+        />
         <InstructionsModal
           visible={this.state.instructionsVisible}
           onOptionServiceConfig={this.goToServiceScan}
@@ -257,13 +291,6 @@ export default class MainScreen extends Component {
             tintColor={pallete.accent}
           />
         </View>
-        <Toast
-          ref='toast'
-          style={styles.genericToast}
-          textStyle={styles.genericToastText}
-          positionValue={32}
-          position='top'
-        />
       </View>
     )
   }
