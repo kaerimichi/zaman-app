@@ -29,14 +29,15 @@ function gatherPunches (punches) {
 }
 
 function gatherEstimates ({ dayBalance, dayClosureEstimate }) {
+  const { workShiftBased, hourBankBased } = dayClosureEstimate
+  const dayClosureHasValues = Boolean(workShiftBased && hourBankBased)
+  const dayClosureDiffer = dayClosureHasValues && (workShiftBased !== hourBankBased)
   const items = [
     {
       title: `Hoje, ${moment().format('DD/MM')}`,
       text: dayBalance.remaining.asShortTime
     }
   ]
-  const hourBankEstimateIsPast = moment()
-    .isSameOrAfter(moment(dayClosureEstimate.hourBankBased, 'HH:mm'))
 
   if (dayBalance.remaining.asMinutes > 0) {
     items.push(
@@ -46,7 +47,7 @@ function gatherEstimates ({ dayBalance, dayClosureEstimate }) {
       }
     )
 
-    if (!hourBankEstimateIsPast) {
+    if (dayClosureDiffer) {
       items.push(
         {
           title: 'Encerramento com saldo de horas',

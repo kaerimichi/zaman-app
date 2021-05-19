@@ -39,7 +39,7 @@ export default class HistoryScreen extends Component {
     const monthPunches = this.state.monthPunches
     let updatedMonthPunches = monthPunches.map(entry => {
       if (entry.date === date) {
-        entry.punches = punches
+        entry.punches = punches || []
       }
 
       return entry

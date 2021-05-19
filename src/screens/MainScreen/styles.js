@@ -39,6 +39,9 @@ export default StyleSheet.create({
     padding: 12
   },
   genericToastText: {
-    color: pallete.primary
+    textAlign: 'center',
+    color: pallete.primary,
+    fontSize: 14,
+    fontWeight: 'bold'
   }
 })

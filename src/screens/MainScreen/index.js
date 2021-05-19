@@ -72,7 +72,7 @@ export default class MainScreen extends Component {
         statistics,
         modalVisible: true,
         modalContent: (
-          <Text>{ messages.punchSuccess }</Text>
+          <Text style={styles.genericToastText}>{ messages.punchSuccess }</Text>
         )
       })
       this.updatePanelContents()
@@ -85,7 +85,7 @@ export default class MainScreen extends Component {
       this.setState({
         modalVisible: true,
         modalContent: (
-          <Text>{ e.message }</Text>
+          <Text style={styles.genericToastText}>{ e.message }</Text>
         )
       })
       setTimeout(() => {
@@ -194,7 +194,7 @@ export default class MainScreen extends Component {
       this.setState({
         modalVisible: true,
         modalContent: (
-          <Text>{ e.message }</Text>
+          <Text style={styles.genericToastText}>{ e.message }</Text>
         )
       })
 

@@ -3,11 +3,11 @@ import pallete from 'Zaman/src/misc/pallete'
 
 export default class EndOfDayWithBalanceNotificationRule extends BaseNotificationRule {
   shouldSchedule () {
-    const { asMinutes: remAsMinutes } = this.statistics.dayBalance.remaining
-    const { asMinutes: extraAsMinutes } = this.statistics.monthBalance.extra
-    const balanceIsNeutral = (remAsMinutes - extraAsMinutes) === 0
+    const { workShiftBased, hourBankBased } = this.statistics.dayClosureEstimate
+    const dayClosureHasValues = Boolean(workShiftBased && hourBankBased)
+    const dayClosureDiffer = dayClosureHasValues && (workShiftBased !== hourBankBased)
 
-    return this.punches.length % 2 !== 0 && !balanceIsNeutral && this.isWeekDay()
+    return this.punches.length % 2 !== 0 && dayClosureDiffer && this.isWeekDay()
   }
 
   shouldCancel () {
