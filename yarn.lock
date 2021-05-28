@@ -7036,9 +7036,9 @@ yargs@^9.0.0:
     y18n "^3.2.1"
     yargs-parser "^7.0.0"
 
-zaman-statistics-generator@^1.4.9:
-  version "1.4.9"
-  resolved "https://registry.yarnpkg.com/zaman-statistics-generator/-/zaman-statistics-generator-1.4.9.tgz#d957601966048750e949ffc70c5e4ddc29389ba1"
-  integrity sha512-jEaOJS5svaqYz6IgwFlxRfR+axeiU2RjfZyWFy6Slcy6rqK57if+mEbRZm3fTzJcrhhYbEUTgTvb7QiH8gGMcg==
+zaman-statistics-generator@^1.4.13:
+  version "1.4.13"
+  resolved "https://registry.yarnpkg.com/zaman-statistics-generator/-/zaman-statistics-generator-1.4.13.tgz#fa5a5f20a086188060be1885ad53277b81203f54"
+  integrity sha512-c94+t678f+SrmTHmoYbZvy+Ge6FJOdBMxhTdiVnFzNUJsPjIUR0jtRAl03Nj/6c5L0/WYUgzue8arEUn45wANQ==
   dependencies:
     date-fns "^2.21.1"

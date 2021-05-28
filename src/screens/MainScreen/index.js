@@ -111,18 +111,30 @@ export default class MainScreen extends Component {
   }
 
   updatePanelContents = async () => {
-    const monthEntries = await this.storage.getItem('monthEntries')
+    const statistics = await this.getStatistics()
     const panelContents = getFormattedPanelContents(
-      compute(monthEntries),
+      statistics,
       this.state.dayPunches
     )
 
     this.setState({ panelContents })
   }
 
+  getStatistics = async () => {
+    const config = this.state.serviceConfiguration
+    const serviceType = config.alias === 'offline' ? 'offline' : 'online'
+
+    if (serviceType === 'offline') {
+      const monthEntries = await this.storage.getItem('monthEntries')
+
+      return compute(monthEntries)
+    }
+
+    return this.state.statistics
+  }
+
   updatePercentage = async () => {
-    const monthEntries = await this.storage.getItem('monthEntries')
-    const { dayBalance } = compute(monthEntries)
+    const { dayBalance } = await this.getStatistics()
     const dayTotalMinutes = dayBalance.remaining.asMinutes + dayBalance.completed.asMinutes
     const dayRemainingMinutes = dayBalance.remaining.asMinutes
     const percentage = Math.round(
