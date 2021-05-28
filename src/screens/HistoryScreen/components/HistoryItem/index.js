@@ -18,6 +18,10 @@ export default class HistoryItem extends Component {
   toggleInput = () => {
     const state = !this.state.editingIsHidden
 
+    if (this.props.serviceType !== 'offline') {
+      return
+    }
+
     Vibration.vibrate(20)
     this.setState({
       editingIsHidden: state,

@@ -23,7 +23,8 @@ export default class HistoryScreen extends Component {
     statistics: {},
     info: '',
     dayPunches: null,
-    recalculateVisible: false
+    recalculateVisible: false,
+    serviceType: 'online'
   }
 
   storage = new StorageService()
@@ -73,6 +74,7 @@ export default class HistoryScreen extends Component {
             weekDay={weekDayAsText}
             timeWorked={timeWorked}
             onNewEntryAdded={this.updateWithNewContent}
+            serviceType={this.state.serviceType}
             obs={obs}
           />
         )
@@ -124,7 +126,7 @@ export default class HistoryScreen extends Component {
 
       this.analytics.trackScreenView('History')
 
-      this.setState({ monthPunches: punches, statistics })
+      this.setState({ monthPunches: punches, statistics, serviceType })
     } catch (e) {
       this.setState({ info: e.message })
     } finally {
