@@ -131,8 +131,8 @@ android {
         applicationId "com.zaman"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 33
-        versionName "1.6.7"
+        versionCode 34
+        versionName "1.6.8"
         missingDimensionStrategy 'react-native-camera', 'general'
     }
     splits {
