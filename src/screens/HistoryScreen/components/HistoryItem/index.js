@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import moment from 'moment'
+import localization from 'moment/locale/pt-br'
 import { Text, View, TouchableHighlight, Vibration, TextInput } from 'react-native'
 import styles from './styles'
 import pallete from 'Zaman/src/misc/pallete'
@@ -40,16 +41,25 @@ export default class HistoryItem extends Component {
     this.setState({ editingIsHidden: true })
   }
 
+  getWeekDayAsText = momentDate => {
+    return momentDate
+      .locale('pt-br', localization)
+      .format('dddd')
+      .toLowerCase()
+  }
+
   render () {
-    const { date, weekDay, punches, timeWorked, obs } = Object.assign({}, this.props)
-    const formattedDate = moment(date, 'YYYY-MM-DD').format('DD/MM')
-    const weekDayInfo = `${weekDay}, ${formattedDate}`.toUpperCase()
+    const { date, punches, timeWorked, obs } = Object.assign({}, this.props)
+    const weekDayAsText = this.getWeekDayAsText(moment(date, 'YYYY-MM-DD'))
+    const shortDate = moment(date, 'YYYY-MM-DD').format('DD/MM')
 
     return (
       <TouchableHighlight onLongPress={this.toggleInput} underlayColor={pallete.light}>
         <View style={styles.container}>
           <View style={styles.lineItem}>
-            <Text style={styles.itemHeaderText}>{ weekDayInfo }</Text>
+            <Text style={styles.itemHeaderText}>
+              { `${weekDayAsText.toUpperCase()}, ${shortDate}` }
+            </Text>
           </View>
           {
             punches.length

@@ -35,6 +35,10 @@ export default StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 28
   },
+  companyInfoDescriptionText: {
+    color: pallete.dark,
+    fontSize: 16
+  },
   configurationTip: {
     color: pallete.dark,
     fontSize: 14

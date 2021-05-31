@@ -16,13 +16,18 @@ export default class ConfigurationScreen extends Component {
 
   state = {
     serviceName: '',
+    serviceDescription: null,
     fields: null,
     shareConfigVisible: false
   }
 
   async UNSAFE_componentWillMount () {
-    const { fields, displayName } = await this.storage.getItem('serviceConfiguration')
-    this.setState({ fields, serviceName: displayName })
+    const { fields, displayName, description } = await this.storage.getItem('serviceConfiguration')
+    this.setState({
+      fields,
+      serviceName: displayName,
+      serviceDescription: description
+    })
   }
 
   renderInputs () {
@@ -80,6 +85,11 @@ export default class ConfigurationScreen extends Component {
         <ShareConfigModal visible={this.state.shareConfigVisible} onDismiss={this.dismissConfigModal} />
         <View style={styles.companyInfo}>
           <Text style={styles.companyInfoText}>{this.state.serviceName}</Text>
+          {
+            this.state.serviceDescription
+              ? <Text style={styles.companyInfoDescriptionText}>{this.state.serviceDescription}</Text>
+              : null
+          }
         </View>
         <View style={styles.inputsSection}>
           {
