@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { TextInput, Text, View } from 'react-native'
+import { TextInput, Text, View, ScrollView, SafeAreaView, Image } from 'react-native'
 import ButtonComponent from 'Zaman/src/components/ButtonComponent'
 import StorageService from 'Zaman/src/lib/services/StorageService'
 import ShareConfigModal from './components/ShareConfigModal'
@@ -17,14 +17,22 @@ export default class ConfigurationScreen extends Component {
   state = {
     serviceName: '',
     serviceDescription: null,
+    logoUrl: null,
     fields: null,
     shareConfigVisible: false
   }
 
   async UNSAFE_componentWillMount () {
-    const { fields, displayName, description } = await this.storage.getItem('serviceConfiguration')
+    const {
+      fields,
+      displayName,
+      description,
+      logoUrl
+    } = await this.storage.getItem('serviceConfiguration')
+
     this.setState({
       fields,
+      logoUrl,
       serviceName: displayName,
       serviceDescription: description
     })
@@ -83,25 +91,36 @@ export default class ConfigurationScreen extends Component {
     return (
       <View style={styles.container}>
         <ShareConfigModal visible={this.state.shareConfigVisible} onDismiss={this.dismissConfigModal} />
-        <View style={styles.companyInfo}>
-          <Text style={styles.companyInfoText}>{this.state.serviceName}</Text>
-          {
-            this.state.serviceDescription
-              ? <Text style={styles.companyInfoDescriptionText}>{this.state.serviceDescription}</Text>
-              : null
-          }
-        </View>
-        <View style={styles.inputsSection}>
-          {
-            !this.state.fields
-              ? (
-                <View style={styles.noAdditionalConfigContainer}>
-                  <Text style={styles.noFieldsText}>Não há configurações adicionais.</Text>
-                </View>
-              )
-              : this.renderInputs()
-          }
-        </View>
+        <SafeAreaView style={{ flex: 1 }}>
+          <ScrollView>
+            <View style={styles.companyInfo}>
+              <Text style={styles.companyInfoText}>
+                {this.state.serviceName}
+              </Text>
+              {
+                this.state.logoUrl
+                  ? <Image style={styles.logo} source={{ uri: this.state.logoUrl }}></Image>
+                  : null
+              }
+              {
+                this.state.serviceDescription
+                  ? <Text style={styles.companyInfoDescriptionText}>{this.state.serviceDescription}</Text>
+                  : null
+              }
+            </View>
+            <View style={styles.inputsSection}>
+              {
+                !this.state.fields
+                  ? (
+                    <View style={styles.noAdditionalConfigContainer}>
+                      <Text style={styles.noFieldsText}>Não há configurações adicionais.</Text>
+                    </View>
+                  )
+                  : this.renderInputs()
+              }
+            </View>
+          </ScrollView>
+        </SafeAreaView>
         <View style={styles.actionsContainer}>
           <ButtonComponent iconName='refresh' label='reconfigurar' onPress={() => replace('serviceScan')} />
           <ButtonComponent iconName='share' label='compartilhar' onPress={this.displayConfigCode} />

@@ -16,7 +16,8 @@ export default StyleSheet.create({
   },
   inputsSection: {
     flex: 1,
-    alignItems: 'center'
+    alignItems: 'center',
+    marginBottom: 40
   },
   textInputs: {
     color: pallete.dark,
@@ -37,6 +38,7 @@ export default StyleSheet.create({
   },
   companyInfoDescriptionText: {
     color: pallete.dark,
+    marginTop: 8,
     fontSize: 16
   },
   configurationTip: {
@@ -64,5 +66,13 @@ export default StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 40
+  },
+  logo: {
+    width: 32,
+    height: 32,
+    marginTop: -34,
+    flexDirection: 'column',
+    resizeMode: 'stretch',
+    alignSelf: 'flex-end'
   }
 })
