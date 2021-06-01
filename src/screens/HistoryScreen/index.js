@@ -52,7 +52,7 @@ export default class HistoryScreen extends Component {
     )
 
     await this.storage.setItem(
-      'monthEntries',
+      'monthPunches',
       updatedMonthPunches
     )
 
@@ -107,13 +107,15 @@ export default class HistoryScreen extends Component {
       const serviceType = config && config.alias === 'offline' ? 'offline' : 'online'
       const serviceFactory = new RegistrationFactory(config)
       const registrationService = serviceFactory.getService(serviceType)
-      const { punches, statistics } = await registrationService.retrieveHistory()
-      const todayPunchesObjectFromService = punches
-        ? punches.find(e => e.date === moment().format('YYYY-MM-DD'))
+      const { monthPunches, statistics } = await registrationService.retrieveHistory()
+      const todayPunchesObjectFromService = monthPunches
+        ? monthPunches.find(e => e.date === moment().format('YYYY-MM-DD'))
         : null
       const todayPunches = todayPunchesObjectFromService
         ? todayPunchesObjectFromService.punches
         : null
+
+      await this.storage.setItem('monthPunches', monthPunches)
 
       if (todayPunches && !isEqual(localPunches, todayPunches)) {
         await this.storage.setItem('dayPunches', todayPunches)
@@ -126,7 +128,7 @@ export default class HistoryScreen extends Component {
 
       this.analytics.trackScreenView('History')
 
-      this.setState({ monthPunches: punches, statistics, serviceType })
+      this.setState({ monthPunches, statistics, serviceType })
     } catch (e) {
       this.setState({ info: e.message })
     } finally {

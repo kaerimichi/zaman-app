@@ -62,7 +62,7 @@ export default class OfflineRegistrationService {
 
   async register () {
     try {
-      let monthEntries = await this.storage.getItem('monthEntries')
+      let monthEntries = await this.storage.getItem('monthPunches')
       let currentDayEntry
 
       if (!monthEntries) monthEntries = []
@@ -94,11 +94,12 @@ export default class OfflineRegistrationService {
       }
 
       await this.sleep()
-      await this.storage.setItem('monthEntries', monthEntries)
 
       return Promise.resolve({
         punches: currentDayEntry.punches,
-        statistics: compute(monthEntries)
+        statistics: compute(monthEntries),
+        monthPunches: monthEntries,
+        hourBank: null
       })
     } catch (e) {
       throw e
@@ -107,7 +108,7 @@ export default class OfflineRegistrationService {
 
   async retrieveHistory () {
     try {
-      let monthEntries = await this.storage.getItem('monthEntries')
+      let monthEntries = await this.storage.getItem('monthPunches')
       let monthEntriesToCompute = JSON.parse(JSON.stringify(monthEntries))
 
       monthEntries = this.fillEmptyDays(monthEntries || [])
@@ -128,7 +129,9 @@ export default class OfflineRegistrationService {
         punches: monthEntries,
         statistics: monthEntriesToCompute
           ? compute(monthEntriesToCompute)
-          : null
+          : null,
+        monthPunches: monthEntries,
+        hourBank: null
       })
     } catch (e) {
       throw e

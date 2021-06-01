@@ -90,7 +90,9 @@ export default class OnlineRegistrationService {
         .then(({ data }) => {
           return {
             punches: get(data, registerAction.responseTokens.success.punches),
-            statistics: get(data, registerAction.responseTokens.success.statistics)
+            statistics: get(data, registerAction.responseTokens.success.statistics),
+            monthPunches: get(data, registerAction.responseTokens.success.monthPunches),
+            hourBank: get(data, registerAction.responseTokens.success.hourBank)
           }
         })
         .catch(({ response }) => {
@@ -120,7 +122,9 @@ export default class OnlineRegistrationService {
         .then(({ data }) => {
           return {
             punches: get(data, historyRetrieval.responseTokens.success.punches),
-            statistics: get(data, historyRetrieval.responseTokens.success.statistics)
+            statistics: get(data, historyRetrieval.responseTokens.success.statistics),
+            monthPunches: get(data, historyRetrieval.responseTokens.success.monthPunches),
+            hourBank: get(data, historyRetrieval.responseTokens.success.hourBank)
           }
         })
         .catch(({ response }) => {

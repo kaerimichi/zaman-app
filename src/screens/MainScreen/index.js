@@ -33,6 +33,7 @@ export default class MainScreen extends Component {
     fetching: false,
     statistics: null,
     dayPunches: [],
+    monthPunches: [],
     panelContents: [],
     panelViewHeight: 200,
     serviceConfiguration: null,
@@ -57,9 +58,14 @@ export default class MainScreen extends Component {
       const serviceType = config.alias === 'offline' ? 'offline' : 'online'
       const serviceFactory = new RegistrationFactory(config)
       const registrationService = serviceFactory.getService(serviceType)
-      const { punches, statistics } = await registrationService.register()
+      const {
+        punches,
+        statistics,
+        monthPunches
+      } = await registrationService.register()
 
       await this.storage.setItem('dayPunches', punches)
+      await this.storage.setItem('monthPunches', monthPunches)
       await this.storage.setItem('statistics', statistics)
 
       if (statistics) {
@@ -68,8 +74,9 @@ export default class MainScreen extends Component {
       }
 
       this.setState({
-        dayPunches: punches,
         statistics,
+        monthPunches,
+        dayPunches: punches,
         modalVisible: true,
         modalContent: (
           <Text style={styles.genericToastText}>{ messages.punchSuccess }</Text>
@@ -121,16 +128,7 @@ export default class MainScreen extends Component {
   }
 
   getStatistics = async () => {
-    const config = this.state.serviceConfiguration
-    const serviceType = config.alias === 'offline' ? 'offline' : 'online'
-
-    if (serviceType === 'offline') {
-      const monthEntries = await this.storage.getItem('monthEntries')
-
-      return compute(monthEntries)
-    }
-
-    return this.state.statistics
+    return compute(this.state.monthPunches)
   }
 
   updatePercentage = async () => {
@@ -168,12 +166,14 @@ export default class MainScreen extends Component {
       const { addListener } = this.props.navigation
       const timeInfo = await this.storage.getItem('timeInfo')
       const dayPunches = await this.storage.getItem('dayPunches')
+      const monthPunches = await this.storage.getItem('monthPunches')
       const statistics = await this.storage.getItem('statistics')
       const serviceConfiguration = await this.storage.getItem('serviceConfiguration')
       let intervalId = null
 
       addListener('willFocus', async () => {
         const dayPunches = await this.storage.getItem('dayPunches')
+        const monthPunches = await this.storage.getItem('monthPunches')
         const statistics = await this.storage.getItem('statistics')
         const serviceConfiguration = await this.storage.getItem('serviceConfiguration')
 
@@ -185,12 +185,18 @@ export default class MainScreen extends Component {
           notifications.process()
         }
 
-        this.setState({ dayPunches: dayPunches || [], statistics, serviceConfiguration })
+        this.setState({
+          dayPunches: dayPunches || [],
+          statistics,
+          monthPunches,
+          serviceConfiguration
+        })
       })
 
       this.setState({
         timeInfo,
         intervalId,
+        monthPunches,
         dayPunches: dayPunches || [],
         statistics,
         serviceConfiguration
