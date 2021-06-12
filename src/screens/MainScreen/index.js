@@ -179,6 +179,8 @@ export default class MainScreen extends Component {
       const timeInfo = await this.storage.getItem('timeInfo')
       const dayPunches = await this.storage.getItem('dayPunches')
       const monthPunches = await this.storage.getItem('monthPunches')
+      const workShift = await this.storage.getItem('workShift')
+      const hourBank = await this.storage.getItem('hourBank')
       const statistics = await this.storage.getItem('statistics')
       const serviceConfiguration = await this.storage.getItem('serviceConfiguration')
       let intervalId = null
@@ -215,6 +217,8 @@ export default class MainScreen extends Component {
         intervalId,
         monthPunches,
         dayPunches: dayPunches || [],
+        workShift,
+        hourBank,
         statistics,
         serviceConfiguration
       })
