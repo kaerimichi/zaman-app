@@ -67,8 +67,8 @@ export default class MainScreen extends Component {
       const statistics = compute(monthPunches, workShift, hourBank)
       let notifications
 
-      await this.storage.setItem('hourBank', hourBank)
-      await this.storage.setItem('workShift', workShift)
+      await this.storage.setItem('hourBank', hourBank || null)
+      await this.storage.setItem('workShift', workShift || null)
       await this.storage.setItem('dayPunches', punches)
       await this.storage.setItem('monthPunches', monthPunches)
       await this.storage.setItem('statistics', statistics)
