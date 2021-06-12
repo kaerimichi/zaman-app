@@ -89,8 +89,6 @@ export default class OnlineRegistrationService {
       return axios.post(url, registerAction.data, options)
         .then(({ data }) => {
           return {
-            punches: get(data, registerAction.responseTokens.success.punches),
-            statistics: get(data, registerAction.responseTokens.success.statistics),
             monthPunches: get(data, registerAction.responseTokens.success.monthPunches),
             hourBank: get(data, registerAction.responseTokens.success.hourBank)
           }
@@ -121,8 +119,6 @@ export default class OnlineRegistrationService {
       return axios.get(url, options)
         .then(({ data }) => {
           return {
-            punches: get(data, historyRetrieval.responseTokens.success.punches),
-            statistics: get(data, historyRetrieval.responseTokens.success.statistics),
             monthPunches: get(data, historyRetrieval.responseTokens.success.monthPunches),
             hourBank: get(data, historyRetrieval.responseTokens.success.hourBank)
           }

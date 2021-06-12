@@ -33,6 +33,8 @@ export default class MainScreen extends Component {
     fetching: false,
     statistics: null,
     dayPunches: [],
+    workShift: null,
+    hourBank: null,
     monthPunches: [],
     panelContents: [],
     panelViewHeight: 200,
@@ -55,15 +57,18 @@ export default class MainScreen extends Component {
         throw new Error(messages.noService)
       }
 
+      const currentDate = moment().format('YYYY-MM-DD')
       const serviceType = config.alias === 'offline' ? 'offline' : 'online'
+      const workShift = config.data.workShift
       const serviceFactory = new RegistrationFactory(config)
       const registrationService = serviceFactory.getService(serviceType)
-      const {
-        punches,
-        statistics,
-        monthPunches
-      } = await registrationService.register()
+      const { hourBank, monthPunches } = await registrationService.register()
+      const punches = monthPunches.find(({ date }) => date === currentDate).punches || []
+      const statistics = compute(monthPunches, workShift, hourBank)
+      let notifications
 
+      await this.storage.setItem('hourBank', hourBank)
+      await this.storage.setItem('workShift', workShift)
       await this.storage.setItem('dayPunches', punches)
       await this.storage.setItem('monthPunches', monthPunches)
       await this.storage.setItem('statistics', statistics)
@@ -74,6 +79,8 @@ export default class MainScreen extends Component {
       }
 
       this.setState({
+        hourBank,
+        workShift,
         statistics,
         monthPunches,
         dayPunches: punches,
@@ -83,7 +90,7 @@ export default class MainScreen extends Component {
         )
       })
       this.updatePanelContents()
-      
+
       setTimeout(() => {
         this.setState({ modalVisible: false })
       }, TOAST_DURATION)
@@ -128,11 +135,15 @@ export default class MainScreen extends Component {
   }
 
   getStatistics = async () => {
-    return compute(this.state.monthPunches)
+    return compute(
+      this.state.monthPunches,
+      this.state.workShift,
+      this.state.hourBank
+    )
   }
 
-  updatePercentage = async () => {
-    const { dayBalance } = await this.getStatistics()
+  updatePercentage = async (workShift, hourBank) => {
+    const { dayBalance } = await this.getStatistics(workShift, hourBank)
     const dayTotalMinutes = dayBalance.remaining.asMinutes + dayBalance.completed.asMinutes
     const dayRemainingMinutes = dayBalance.remaining.asMinutes
     const percentage = Math.round(
@@ -149,6 +160,7 @@ export default class MainScreen extends Component {
     const timeInfo = this.state.timeInfo
     const lastDate = timeInfo ? timeInfo.lastDate : null
     const today = moment().format('YYYY-MM-DD')
+    let notifications
 
     if (lastDate !== today) {
       await this.storage.setItem('dayPunches', [])
@@ -174,8 +186,11 @@ export default class MainScreen extends Component {
       addListener('willFocus', async () => {
         const dayPunches = await this.storage.getItem('dayPunches')
         const monthPunches = await this.storage.getItem('monthPunches')
+        const workShift = await this.storage.getItem('workShift')
+        const hourBank = await this.storage.getItem('hourBank')
         const statistics = await this.storage.getItem('statistics')
         const serviceConfiguration = await this.storage.getItem('serviceConfiguration')
+        let notifications
 
         if (dayPunches && statistics) {
           notifications = new NotificationsService(
@@ -187,6 +202,8 @@ export default class MainScreen extends Component {
 
         this.setState({
           dayPunches: dayPunches || [],
+          workShift,
+          hourBank,
           statistics,
           monthPunches,
           serviceConfiguration

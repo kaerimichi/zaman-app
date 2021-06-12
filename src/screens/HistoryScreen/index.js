@@ -10,6 +10,7 @@ import moment from 'moment'
 import styles from './styles'
 import { isEqual, sortBy } from 'lodash'
 import RecalculateModal from './components/RecalculateModal'
+import { compute } from 'zaman-statistics-generator'
 
 export default class HistoryScreen extends Component {
   static navigationOptions = {
@@ -107,7 +108,8 @@ export default class HistoryScreen extends Component {
       const serviceType = config && config.alias === 'offline' ? 'offline' : 'online'
       const serviceFactory = new RegistrationFactory(config)
       const registrationService = serviceFactory.getService(serviceType)
-      const { monthPunches, statistics } = await registrationService.retrieveHistory()
+      const { monthPunches, hourBank } = await registrationService.retrieveHistory()
+      const statistics = compute(monthPunches, config.data.workShift, hourBank)
       const todayPunchesObjectFromService = monthPunches
         ? monthPunches.find(e => e.date === moment().format('YYYY-MM-DD'))
         : null
